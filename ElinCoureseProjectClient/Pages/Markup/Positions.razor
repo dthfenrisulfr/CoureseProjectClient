@@ -1,0 +1,34 @@
+﻿@page "/positions"
+
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#TwoColumnModal">
+        Запустить модальное окно
+    </button>
+
+    <table class="table table-hover w-50 table-sm">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">Наименование</th>
+                <th scope="col">Оклад</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var pos in positions)
+            {
+                <tr>
+                    <td>@pos.Position</td>
+                    <td>@pos.Salary</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+<ElinCoureseProjectClient.Pages.Markup.ModalWindowMarkup.TwoColumnModal FirstColemnName="Наименование должности" SecondColumnName="Оклад" Enum="Models.TwoColumnModalEnum.Positions" />
+
+    @code {
+        protected override async Task OnInitializedAsync()
+        {
+            positions = await Data.GrpcClient.GetPositionList();
+            StateHasChanged();
+        }
+        List<CPS.Positions> positions = new List<CPS.Positions>();
+    }

@@ -1,0 +1,36 @@
+﻿@page "/products"
+
+<table class="table table-hover w-50 table-sm">
+    <thead class="thead-light">
+        <tr>
+            <th scope="col">Наименование</th>
+            <th scope="col">Количество стёкол</th>
+            <th scope="col">Высота</th>
+            <th scope="col">Ширина</th>
+            <th scope="col">Вес</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var pos in products)
+        {
+        <tr>
+            <td>@pos.ProductName</td>
+            <td>@pos.NumberOfGlasses</td>
+            <td>@pos.Heght</td>
+            <td>@pos.Width</td>
+            <td>@pos.Weight</td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        products = await Data.GrpcClient.GetProductsList();
+        StateHasChanged();
+    }
+    List<CPS.Products> products = new List<CPS.Products>();
+}

@@ -1,0 +1,11 @@
+﻿@inject NavigationManager Nav
+@page "/"
+
+Welcome to your new app.
+
+@code{      
+    protected override void OnInitialized()
+    {
+        Data.GrpcClient.Connection();
+    }
+}

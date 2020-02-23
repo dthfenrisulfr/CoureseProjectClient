@@ -1,0 +1,52 @@
+﻿@page "/staff"
+
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#StaffModal">
+    Запустить модальное окно
+</button>
+
+
+<table class="table table-hover w-50 table-sm">
+    <thead class="thead-light">
+        <tr>
+            <th scope="col">Номер пасспорта</th>
+            <th scope="col">Фамилия</th>
+            <th scope="col">Имя</th>
+            <th scope="col">Отчество</th>
+            <th scope="col">Пол</th>
+            <th scope="col">Опыт</th>
+            <th scope="col">Дата рождения</th>
+            <th scope="col">Дата приёма на работу</th>
+            <th scope="col">Отдел</th>
+            <th scope="col">Должность</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var pos in staff)
+        {
+            <tr>
+                <td>@pos.Passport</td>
+                <td>@pos.SecondName</td>
+                <td>@pos.Name</td>
+                <td>@pos.MiddleName</td>
+                <td>@pos.Gender</td>
+                <td>@pos.Experience</td>
+                <td>@ToDateTime(pos.BDate)</td>
+                <td>@ToDateTime(pos.DateOfReceipt)</td>
+                <td>@pos.Department</td>
+                <td>@pos.Position</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<ElinCoureseProjectClient.Pages.Markup.ModalWindowMarkup.AddStaffWindow />
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        staff = await Data.GrpcClient.GetStaffList();
+        StateHasChanged();
+    }
+    string ToDateTime(long time) => new DateTime(time).ToShortDateString();
+    List<CPS.Staff> staff = new List<CPS.Staff>();
+}

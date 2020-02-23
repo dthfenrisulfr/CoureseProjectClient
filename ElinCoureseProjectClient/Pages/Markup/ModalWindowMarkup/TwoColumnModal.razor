@@ -1,0 +1,48 @@
+﻿<div class="modal fade" id="TwoColumnModal" tabindex="-1" role="dialog" aria-labelledby="TwoColumnModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="TwoColumnModalLabel">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="FirstColemnName">@FirstColemnName</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="@FirstColemnName" aria-describedby="FirstColemnName" @bind-value="forTwoColumnModalModel.FirstColumn">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="SecondColumnName">@SecondColumnName</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="@SecondColumnName" aria-describedby="SecondColumnName" @bind-value="forTwoColumnModalModel.SecondColumn">
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="@(() => Save())">Сохранить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code{
+    [Parameter]
+    public string FirstColemnName { get; set; }
+    [Parameter]
+    public string SecondColumnName { get; set; }
+    [Parameter]
+    public Models.TwoColumnModalEnum Enum { get; set; }
+
+    private Models.ForTwoColumnModalModel forTwoColumnModalModel = new Models.ForTwoColumnModalModel();
+    private void Save()
+    {
+        if (Enum == Models.TwoColumnModalEnum.Positions)Data.GrpcClient.AddPosition(forTwoColumnModalModel);
+        else Data.GrpcClient.AddDepatment(forTwoColumnModalModel);
+    }
+}

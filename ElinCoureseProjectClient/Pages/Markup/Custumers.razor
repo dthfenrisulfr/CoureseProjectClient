@@ -1,0 +1,39 @@
+﻿@page "/customers"
+
+<table class="table table-hover w-50 table-sm">
+    <thead class="thead-light">
+        <tr>
+            <th scope="col">Организация</th>
+            <th scope="col">Имя</th>
+            <th scope="col">Фамилия</th>
+            <th scope="col">Адрес</th>
+            <th scope="col">Дата окончания договора</th>
+            <th scope="col">Тип оплаты</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var pos in customers)
+        {
+        <tr>
+            <td>@pos.Organization</td>
+            <td>@pos.Name</td>
+            <td>@pos.SecondName</td>
+            <td>@pos.Address</td>
+            <td>@ToDateTime(pos.DateOfContractCompletion)</td>
+            <td>@pos.PaymentAccount</td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        customers = await Data.GrpcClient.GetCustomersList();
+        StateHasChanged();
+    }
+    string ToDateTime(long time) => new DateTime(time).ToShortDateString();
+    List<CPS.Customers> customers = new List<CPS.Customers>();
+}

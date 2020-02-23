@@ -1,0 +1,130 @@
+﻿<div class="modal fade" id="StaffModal" tabindex="-1" role="dialog" aria-labelledby="TwoColumnModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="StaffModalLable">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="passport">Паспорт</span>
+                        </div>
+                        <input type="text" class="form-control" aria-label="staffName" aria-describedby="passport" @bind-value="@staff.Passport">
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="staffSecondName">Фамилия</span>
+                        </div>
+                        <input type="text" class="form-control" aria-label="staffName" aria-describedby="staffSecondName" @bind-value="@staff.SecondName">
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="staffName">Имя</span>
+                        </div>
+                        <input type="text" class="form-control" aria-label="staffName" aria-describedby="FirstColemnName" @bind-value="@staff.Name">
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="staffMiddleName">Отчество</span>
+                        </div>
+                        <input type="text" class="form-control" aria-label="staffName" aria-describedby="staffMiddleName" @bind-value="@staff.MiddleName">
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="BDate">Дата рождения</span>
+                        </div>
+                        <input type="text" class="form-control" aria-label="staffName" aria-describedby="BDate" @bind-value="@staff.BDate">
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="Gender">Пол</span>
+                        </div>
+                        <input type="text" class="form-control" aria-label="staffName" aria-describedby="Gender" @bind-value="@staff.Gender">
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="Experience">Опыт</span>
+                        </div>
+                        <input type="text" class="form-control" aria-label="staffName" aria-describedby="Experience" @bind-value="@staff.Experience">
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@depTitle</button>
+                            <div class="dropdown-menu">
+                                @foreach (var dep in departments)
+                                {
+                                    <a class="dropdown-item" @onclick="(()=>BindDepatment(dep))">@dep.Department</a>
+                                }
+                            </div>
+                        </div>
+                        <input type="text" class="form-control" aria-label="Text input with dropdown button">
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@posTitle</button>
+                            <div class="dropdown-menu">
+                                @foreach (var pos in positions)
+                                {
+                                    <a class="dropdown-item" @onclick="(()=>BindPosition(pos))">@pos.Position</a>
+                                }
+                            </div>
+                        </div>
+                        <input type="text" class="form-control" aria-label="Text input with dropdown button">
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="@(() => Save())">Сохранить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code{
+    private CPS.Staff staff = new CPS.Staff();
+    private List<CPS.Departments> departments = new List<CPS.Departments>();
+    private List<CPS.Positions> positions = new List<CPS.Positions>();
+    private string depTitle = "Отдел";
+    private string posTitle = "Должность";
+
+
+    //private DateTime DateTime = new DateTime();
+
+    protected override async Task OnInitializedAsync()
+    {
+        departments = await Data.GrpcClient.GetDepatmentsList();
+        positions = await Data.GrpcClient.GetPositionList();
+    }
+
+    private void Save()
+    {
+        staff.DateOfReceipt = DateTime.Now.Ticks;
+        Data.GrpcClient.AddStaff(staff);
+    }
+    private void BindDepatment(CPS.Departments department)
+    {
+        staff.Department = department.DepartmentID.ToString();
+        depTitle = department.Department;
+        StateHasChanged();
+    }
+    private void BindPosition(CPS.Positions position)
+    {
+        staff.Position = position.PositionID.ToString();
+        posTitle = position.Position;
+        StateHasChanged();
+    }
+}

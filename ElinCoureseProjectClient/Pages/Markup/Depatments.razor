@@ -1,0 +1,34 @@
+﻿@page "/depatments"
+
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#TwoColumnModal">
+    Запустить модальное окно
+</button>
+
+<table class="table table-hover w-50 table-sm">
+    <thead class="thead-light">
+        <tr>
+            <th scope="col">Наименование</th>
+            <th scope="col">Количество сотрудников</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var pos in departments)
+        {
+            <tr>
+                <td>@pos.Department</td>
+                <td>@pos.NumberOfEmployees</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<ElinCoureseProjectClient.Pages.Markup.ModalWindowMarkup.TwoColumnModal FirstColemnName="Наименование отдела" SecondColumnName="Количество сотрудников" Enum="Models.TwoColumnModalEnum.Depatments" />
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        departments = await Data.GrpcClient.GetDepatmentsList();
+        StateHasChanged();
+    }
+    List<CPS.Departments> departments = new List<CPS.Departments>();
+}

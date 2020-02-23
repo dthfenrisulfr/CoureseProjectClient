@@ -1,0 +1,47 @@
+﻿@page "/orders"
+
+<table class="table table-hover w-50 table-sm">
+    <thead class="thead-light">
+        <tr>
+            <th scope="col">Готовность</th>
+            <th scope="col">Имя заказчика</th>
+            <th scope="col">Фамилия заказчика</th>
+            <th scope="col">Организация</th>
+            <th scope="col">Адрес</th>
+            <th scope="col">Дата заказа</th>
+            <th scope="col">Дата выполнения</th>
+            <th scope="col">Список товаров</th>
+            <th scope="col">Номер заказа</th>
+            <th scope="col">Выполнил</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var pos in orders)
+        {
+        <tr>
+            <td>@pos.Condition</td>
+            <td>@pos.Customer.Name</td>
+            <td>@pos.Customer.SecondName</td>
+            <td>@pos.Customer.Organization</td>
+            <td>@pos.Customer.Address</td>
+            <td>@ToDateTime(pos.Date)</td>
+            <td>@ToDateTime(pos.Customer.DateOfContractCompletion)</td>
+            <td>@pos.AllProducts</td>
+            <td>@pos.OrderID</td>
+            <td>@pos.Staff.SecondName  @pos.Staff.Name</td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        orders = await Data.GrpcClient.GetOrdersList();
+        StateHasChanged();
+    }
+    string ToDateTime(long time) => new DateTime(time).ToShortDateString();
+    List<CPS.Orders> orders = new List<CPS.Orders>();
+}
