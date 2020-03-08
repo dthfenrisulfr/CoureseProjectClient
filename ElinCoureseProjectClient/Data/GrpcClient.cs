@@ -23,7 +23,7 @@ namespace ElinCoureseProjectClient.Data
         }
 
         /// <summary>
-        ///  Метод через энумератор выберает один из методов, делает запрос на свервис и возвращает выбранный объект из коллекции БД
+        ///  Метод через энумератор выбирает один из методов, делает запрос на свервис и возвращает выбранный объект из коллекции БД
         /// </summary>
         public static object GetOneObject(int objectID, ObjectType type)
         {
@@ -50,7 +50,7 @@ namespace ElinCoureseProjectClient.Data
             return null;
         }
         /// <summary>
-        ///  Метод через энумератор выберает один из методов, делает запрос на свервис и возвращает коллекцию выбранного типа
+        ///  Метод через энумератор выбирает один из методов, делает запрос на свервис и возвращает коллекцию выбранного типа
         /// </summary>
         public async static Task<object> GetObjectList(ObjectType type)
         {
@@ -125,7 +125,7 @@ namespace ElinCoureseProjectClient.Data
             return null;
         }
         /// <summary>
-        ///  Метод через энумератор выберает один из методов, делает запрос на добавление
+        ///  Метод через энумератор выбирает один из методов, делает запрос на добавление
         /// </summary>
         public static void AddObject(object Obj, ObjectType type)
         {
@@ -169,7 +169,7 @@ namespace ElinCoureseProjectClient.Data
             }
         }
         /// <summary>
-        ///  Метод через энумератор выберает один из методов, делает запрос на удаление
+        ///  Метод через энумератор выбирает один из методов, делает запрос на удаление
         /// </summary>
         public static void DeleteObject(int objcetID, ObjectType type)
         {
@@ -197,7 +197,7 @@ namespace ElinCoureseProjectClient.Data
             }
         }
         /// <summary>
-        ///  Метод через энумератор выберает один из методов, делает запрос на обновление
+        ///  Метод через энумератор выбирает один из методов, делает запрос на обновление
         /// </summary>
         public static void UpdateObject(object Obj, ObjectType type)
         {
