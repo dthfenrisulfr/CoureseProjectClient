@@ -42,7 +42,7 @@
     private Models.ForTwoColumnModalModel forTwoColumnModalModel = new Models.ForTwoColumnModalModel();
     private void Save()
     {
-        if (Enum == Models.TwoColumnModalEnum.Positions)Data.GrpcClient.AddPosition(forTwoColumnModalModel);
-        else Data.GrpcClient.AddDepatment(forTwoColumnModalModel);
+        if (Enum == Models.TwoColumnModalEnum.Positions)Data.GrpcClient.AddObject(forTwoColumnModalModel, Data.ObjectType.Position);
+        else Data.GrpcClient.AddObject(forTwoColumnModalModel, Data.ObjectType.Depatment);
     }
 }

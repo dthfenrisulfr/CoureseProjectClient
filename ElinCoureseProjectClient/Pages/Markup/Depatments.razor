@@ -9,15 +9,18 @@
         <tr>
             <th scope="col">Наименование</th>
             <th scope="col">Количество сотрудников</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var pos in departments)
+        @foreach (var dep in departments)
         {
-            <tr>
-                <td>@pos.Department</td>
-                <td>@pos.NumberOfEmployees</td>
-            </tr>
+        <tr>
+            <td>@dep.Department</td>
+            <td>@dep.NumberOfEmployees</td>
+            <td><button class="btn btn-outline-secondary" @onclick="(()=>DeleteDepatment(dep))"><i class="oi oi-account-login" title="icon name" aria-hidden="true"></i></button></td>
+
+        </tr>
         }
     </tbody>
 </table>
@@ -27,8 +30,18 @@
 @code {
     protected override async Task OnInitializedAsync()
     {
-        departments = await Data.GrpcClient.GetDepatmentsList();
+        departments = await Data.GrpcClient.GetObjectList(Data.ObjectType.Depatment) as List<CPS.Departments>;
+        Data.GrpcClient.StateChanged += OnStateChanged;
         StateHasChanged();
+    }
+    private void DeleteDepatment(CPS.Departments depatments)
+    {
+        Data.GrpcClient.DeleteObject(depatments.DepartmentID, Data.ObjectType.Depatment);
+    }
+    private async void OnStateChanged(object sender, EventArgs arg)
+    {
+        departments = await Data.GrpcClient.GetObjectList(Data.ObjectType.Depatment) as List<CPS.Departments>;
+        await InvokeAsync(()=>StateHasChanged());
     }
     List<CPS.Departments> departments = new List<CPS.Departments>();
 }

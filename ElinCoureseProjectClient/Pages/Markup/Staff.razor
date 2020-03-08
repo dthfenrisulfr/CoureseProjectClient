@@ -23,18 +23,19 @@
     <tbody>
         @foreach (var pos in staff)
         {
-            <tr>
-                <td>@pos.Passport</td>
-                <td>@pos.SecondName</td>
-                <td>@pos.Name</td>
-                <td>@pos.MiddleName</td>
-                <td>@pos.Gender</td>
-                <td>@pos.Experience</td>
-                <td>@ToDateTime(pos.BDate)</td>
-                <td>@ToDateTime(pos.DateOfReceipt)</td>
-                <td>@pos.Department</td>
-                <td>@pos.Position</td>
-            </tr>
+        <tr>
+            <td>@pos.Passport</td>
+            <td>@pos.SecondName</td>
+            <td>@pos.Name</td>
+            <td>@pos.MiddleName</td>
+            <td>@pos.Gender</td>
+            <td>@pos.Experience</td>
+            <td>@ToDateTime(pos.BDate)</td>
+            <td>@ToDateTime(pos.DateOfReceipt)</td>
+            <td>@pos.Department</td>
+            <td>@pos.Position</td>
+            <td><button class="btn btn-outline-secondary" @onclick="(() => DeleteStaff(pos))"><i class="oi oi-account-login" title="icon name" aria-hidden="true"></i></button></td>
+        </tr>
         }
     </tbody>
 </table>
@@ -44,8 +45,18 @@
 @code {
     protected override async Task OnInitializedAsync()
     {
-        staff = await Data.GrpcClient.GetStaffList();
+        staff = await Data.GrpcClient.GetObjectList(Data.ObjectType.Staff) as List<CPS.Staff>;
+        Data.GrpcClient.StateChanged += OnStateChanged;
         StateHasChanged();
+    }
+    private void DeleteStaff(CPS.Staff staff)
+    {
+        Data.GrpcClient.DeleteObject(staff.Passport, Data.ObjectType.Staff);
+    }
+    private async void OnStateChanged(object sender, EventArgs arg)
+    {
+        staff = await Data.GrpcClient.GetObjectList(Data.ObjectType.Staff) as List<CPS.Staff>;
+        await InvokeAsync(() => StateHasChanged());
     }
     string ToDateTime(long time) => new DateTime(time).ToShortDateString();
     List<CPS.Staff> staff = new List<CPS.Staff>();

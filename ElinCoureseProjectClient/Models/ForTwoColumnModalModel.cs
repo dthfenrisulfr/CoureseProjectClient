@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace ElinCoureseProjectClient.Models
 {
+    /// <summary>
+    ///  Общая модель для модального окна с двумя полями ввода
+    /// </summary>
     public class ForTwoColumnModalModel
     {
         public string FirstColumn { get; set; }

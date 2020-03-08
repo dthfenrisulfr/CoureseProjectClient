@@ -1,0 +1,58 @@
+﻿<div class="modal fade" id="AddCustomerModal" tabindex="-1" role="dialog" aria-labelledby="AddCustomerModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="AddCustomerModalLabel">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="CustomerName">Имя заказчика</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="CustomerName" aria-describedby="CustomerName" @bind-value="customers.Name">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="CustomerSecondName">Фамилия заказчика</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="CustomerSecondName" aria-describedby="CustomerSecondName" @bind-value="customers.SecondName">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="Organization">Организация</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="Organization" aria-describedby="Organization" @bind-value="customers.Organization">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="Address">Адрес</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="Address" aria-describedby="Address" @bind-value="customers.Address">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="PaymentAccount">Тип оплаты</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="PaymentAccount" aria-describedby="PaymentAccount" @bind-value="customers.PaymentAccount">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="@(() => Save())">Сохранить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code{
+    private CPS.Customers customers = new CPS.Customers();
+    private void Save()
+    {
+        customers.DateOfContractCompletion = DateTime.Now.Ticks;
+        Data.GrpcClient.AddObject(customers, Data.ObjectType.Customer);
+    }
+}

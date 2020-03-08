@@ -1,0 +1,101 @@
+﻿<div class="modal fade" id="AddOrderModal" tabindex="-1" role="dialog" aria-labelledby="AddOrderModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="AddOrderModalLabel">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@depTitle</button>
+                            <div class="dropdown-menu">
+                                @foreach (var dep in staff)
+                                {
+                                    <a class="dropdown-item" @onclick="(()=>BindDepatment(dep))">@dep.SecondName</a>
+                                }
+                            </div>
+                        </div>
+                        <input type="text" class="form-control" aria-label="Text input with dropdown button">
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@posTitle</button>
+                            <div class="dropdown-menu">
+                                @foreach (var pos in customers)
+                                {
+                                    <a class="dropdown-item" @onclick="(()=>BindPosition(pos))">@pos.SecondName</a>
+                                }
+                            </div>
+                        </div>
+                        <input type="text" class="form-control" aria-label="Text input with dropdown button">
+                    </div>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@posTitle</button>
+                            <div class="dropdown-menu">
+                                @foreach (var pos in products)
+                                {
+                                    <a class="dropdown-item" @onclick="(()=>BindProducts(pos))">@pos.ProductName</a>
+                                }
+                            </div>
+                        </div>
+                        <input type="text" class="form-control" aria-label="Text input with dropdown button">
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="@(() => Save())">Сохранить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code{
+    private CPS.Orders orders = new CPS.Orders();
+    private List<CPS.Staff> staff = new List<CPS.Staff>();
+    private List<CPS.Customers> customers = new List<CPS.Customers>();
+    private List<CPS.Products> products = new List<CPS.Products>();
+    private string depTitle = "Сотрудник";
+    private string posTitle = "Заказчик";
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        staff = await Data.GrpcClient.GetObjectList(Data.ObjectType.Staff) as List<CPS.Staff>;
+        customers = await Data.GrpcClient.GetObjectList(Data.ObjectType.Customer) as List<CPS.Customers>;
+        products = await Data.GrpcClient.GetObjectList(Data.ObjectType.Product) as List<CPS.Products>;
+    }
+
+    private void Save()
+    {
+        orders.Condition = "false";
+        orders.Date = DateTime.Now.Ticks;
+        Data.GrpcClient.AddObject(orders, Data.ObjectType.Order);
+    }
+    private void BindDepatment(CPS.Staff staff)
+    {
+        orders.Staff = staff;
+        depTitle = staff.Name + ' ' + staff.SecondName;
+        StateHasChanged();
+    }
+    private void BindPosition(CPS.Customers customers)
+    {
+        orders.Customer = customers;
+        posTitle = customers.Name + ' ' + customers.SecondName;
+        StateHasChanged();
+    }
+        private void BindProducts(CPS.Products products)
+    {
+        orders.AllProducts = products.ProductID.ToString();
+        posTitle = products.ProductName;
+        StateHasChanged();
+    }
+}

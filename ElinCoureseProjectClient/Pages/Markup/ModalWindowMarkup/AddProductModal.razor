@@ -1,0 +1,57 @@
+﻿<div class="modal fade" id="AddProductModal" tabindex="-1" role="dialog" aria-labelledby="AddProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="AddProductModalLabel">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="ProductName">Наименование  товара</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="ProductName" aria-describedby="ProductName" @bind-value="products.ProductName">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="GlassCount">Количество стёкол</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="GlassCount" aria-describedby="GlassCount" @bind-value="products.NumberOfGlasses">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="Heght">Высота</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="Heght" aria-describedby="Heght" @bind-value="products.Heght">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="Width">Ширина</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="Width" aria-describedby="Width" @bind-value="products.Width">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="Weight">Вес</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="Weight" aria-describedby="Weight" @bind-value="products.Weight">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="@(() => Save())">Сохранить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code{
+    private CPS.Products products = new CPS.Products();
+    private void Save()
+    {
+        Data.GrpcClient.AddObject(products, Data.ObjectType.Product);
+    }
+}

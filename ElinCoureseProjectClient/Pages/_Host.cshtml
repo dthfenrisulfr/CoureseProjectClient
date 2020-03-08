@@ -8,6 +8,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link href="~/css/open-iconic-bootstrap.css" rel="stylesheet" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ElinCoureseProjectClient</title>
@@ -21,6 +22,11 @@
     <app>
         <component type="typeof(App)" render-mode="ServerPrerendered" />
     </app>
+    <script>
+        function UpdateModal() {
+            $('#UpdatePositionModal').modal('show')
+        }
+    </script>
     <script src="_framework/blazor.server.js"></script>
 </body>
 </html>

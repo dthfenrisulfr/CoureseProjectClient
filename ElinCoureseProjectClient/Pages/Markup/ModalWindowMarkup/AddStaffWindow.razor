@@ -106,14 +106,14 @@
 
     protected override async Task OnInitializedAsync()
     {
-        departments = await Data.GrpcClient.GetDepatmentsList();
-        positions = await Data.GrpcClient.GetPositionList();
+        departments = await Data.GrpcClient.GetObjectList(Data.ObjectType.Depatment) as List<CPS.Departments>;
+        positions = await Data.GrpcClient.GetObjectList(Data.ObjectType.Position) as List<CPS.Positions>;
     }
 
     private void Save()
     {
         staff.DateOfReceipt = DateTime.Now.Ticks;
-        Data.GrpcClient.AddStaff(staff);
+        Data.GrpcClient.AddObject(staff, Data.ObjectType.Staff);
     }
     private void BindDepatment(CPS.Departments department)
     {
