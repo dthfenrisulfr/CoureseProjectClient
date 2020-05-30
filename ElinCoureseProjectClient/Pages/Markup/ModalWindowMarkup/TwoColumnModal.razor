@@ -2,7 +2,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="TwoColumnModalLabel">Modal title</h5>
+                <h5 class="modal-title" id="TwoColumnModalLabel">@ModalTitle</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -32,17 +32,19 @@
 </div>
 
 @code{
-    [Parameter]
-    public string FirstColemnName { get; set; }
-    [Parameter]
-    public string SecondColumnName { get; set; }
-    [Parameter]
-    public Models.TwoColumnModalEnum Enum { get; set; }
+  [Parameter]
+  public string FirstColemnName { get; set; }
+  [Parameter]
+  public string ModalTitle { get; set; }
+  [Parameter]
+  public string SecondColumnName { get; set; }
+  [Parameter]
+  public Models.TwoColumnModalEnum Enum { get; set; }
 
-    private Models.ForTwoColumnModalModel forTwoColumnModalModel = new Models.ForTwoColumnModalModel();
-    private void Save()
-    {
-        if (Enum == Models.TwoColumnModalEnum.Positions)Data.GrpcClient.AddObject(forTwoColumnModalModel, Data.ObjectType.Position);
-        else Data.GrpcClient.AddObject(forTwoColumnModalModel, Data.ObjectType.Depatment);
-    }
+  private Models.ForTwoColumnModalModel forTwoColumnModalModel = new Models.ForTwoColumnModalModel();
+  private void Save()
+  {
+      if (Enum == Models.TwoColumnModalEnum.Positions)Data.GrpcClient.AddObject(forTwoColumnModalModel, Data.ObjectType.Position);
+      else Data.GrpcClient.AddObject(forTwoColumnModalModel, Data.ObjectType.Depatment);
+  }
 }

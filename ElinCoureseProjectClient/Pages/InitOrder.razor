@@ -1,4 +1,6 @@
-﻿<div class="modal fade" id="InitOrder" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="InitOrderLabel" aria-hidden="true">
+﻿@using ElinCoureseProjectClient.Models
+
+<div class="modal fade" id="InitOrder" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="InitOrderLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -8,12 +10,12 @@
                 </button>
             </div>
             <div class="modal-body">
-                @if (_step == "getCustomer")
+                @if (_step == StepEnum.getCustomer)
                 {
                     <button type="button" class="btn btn-primary btn-lg btn-block" @onclick="@(()=>SetCustomer(true))"> Новый клиент</button>
                     <button type="button" class="btn btn-primary btn-lg btn-block" @onclick="@(()=>SetCustomer(false))">Выбрать из списка</button>
                 }
-                @if (_step == "setCustomerTrue")
+                @if (_step == StepEnum.setCustomerTrue)
                 {
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
@@ -47,7 +49,7 @@
                     </div>
                     <button type="button" class="btn btn-secondary" @onclick="@(()=>CustomerReady(true))">Сохранить</button>
                 }
-                @if (_step == "setCustomerFalse")
+                @if (_step == StepEnum.setCustomerFalse)
                 {
 
                     <select multiple class="form-control" id="exampleFormControlSelect2">
@@ -58,17 +60,17 @@
                         }
                     </select>
                 }
-                @if (_step == "customerReadyTrue")
+                @if (_step == StepEnum.customerReadyTrue)
                 {
                     <button type="button" class="btn btn-success btn-lg btn-block" @onclick="@(()=>SetCustomer(true))"> Новый клиент</button>
                     <button type="button" class="btn btn-primary btn-lg btn-block" @onclick="@(()=>SetCustomer(false))">Выбрать из списка</button>
                 }
-                @if (_step == "customerReadyFalse")
+                @if (_step == StepEnum.customerReadyFalse)
                 {
                     <button type="button" class="btn btn-primary btn-lg btn-block" @onclick="@(()=>SetCustomer(true))"> Новый клиент</button>
                     <button type="button" class="btn btn-success btn-lg btn-block" @onclick="@(()=>SetCustomer(false))">Выбрать из списка</button>
                 }
-                @if (_step == "getProducts")
+                @if (_step == StepEnum.getProducts)
                 {
                     <select multiple class="form-control" id="exampleFormControlSelect2">
                         <option></option>
@@ -82,7 +84,7 @@
                         <i>@prod.ProductName,</i>
                     }
                 }
-                @if (_step == "getStaff")
+                @if (_step == StepEnum.getStaff)
                 {
                     <select multiple class="form-control" id="exampleFormControlSelect2">
                         <option></option>
@@ -92,7 +94,7 @@
                         }
                     </select>
                 }
-                @if (_step == "getOrder")
+                @if (_step == StepEnum.getOrder)
                 {
                     <p>Имя заказчика: @customers.SecondName @customers.Name</p>
                     <p>Организация: @customers.Organization</p>
@@ -107,7 +109,7 @@
                 }
             </div>
             <div class="modal-footer">
-                @if (_step != "getOrder")
+                @if (_step != StepEnum.getOrder)
                 {
                     <button type="button" class="btn btn-secondary" @onclick="@(()=>PrevStep())">Назад</button>
                     <button type="button" class="btn btn-primary" @onclick="@(()=>NextStep())">Далее</button>
@@ -132,32 +134,32 @@
   private List<CPS.Products> getingProducts = new List<CPS.Products>();
   private async Task<int>  NextStep()
   {
-      if (_step == "customerReadyTrue" || _step == "customerReadyFalse")
+      if (_step == StepEnum.customerReadyTrue || _step == StepEnum.customerReadyFalse)
       {
           productsList = (List<CPS.Products>)await Data.GrpcClient.GetObjectList(Data.ObjectType.Product);
-          _step = "getProducts";
+          _step = StepEnum.getProducts;
 
           StateHasChanged();
           return 1;
       }
-      if (_step == "getProducts")
+      if (_step == StepEnum.getProducts)
       {
           Staffs = (List<CPS.Staff>)await Data.GrpcClient.GetObjectList(Data.ObjectType.Staff);
-          _step = "getStaff";
+          _step = StepEnum.getStaff;
           StateHasChanged();
           return 1;
       }
-      if (_step == "getStaff")
+      if (_step == StepEnum.getStaff)
       {
-          _step = "getOrder";
+          _step = StepEnum.getOrder;
           StateHasChanged();
           return 1;
       }
-      if(_step == "getOrder")
+      if(_step == StepEnum.getOrder)
       {
           orders.Condition = "false";
           orders.Date = DateTime.Now.Ticks;
-          foreach (var prod in getingProducts) 
+          foreach (var prod in getingProducts)
           {
               SetOrderProduct(prod.ProductID);
           }
@@ -170,26 +172,36 @@
   }
   private void PrevStep()
   {
-      var prevStep = "";
-      if (_step == "getCustomer" || _step == "customerReadyTrue" || _step == "customerReadyFalse")
+      if (_step == StepEnum.getCustomer || _step == StepEnum.customerReadyTrue || _step == StepEnum.customerReadyFalse)
       {
-          prevStep = _step;
       }
-      if (_step == "productsIsSet")
+      if (_step == StepEnum.setCustomerTrue || _step == StepEnum.setCustomerFalse)
       {
-          _step = prevStep;
+          _step = StepEnum.getCustomer;
+      }
+      if (_step == StepEnum.getProducts)
+      {
+          _step = _firstStepComplited;
+      }
+      if (_step == StepEnum.getStaff)
+      {
+          _step = StepEnum.getProducts;
+      }
+      if (_step == StepEnum.getOrder)
+      {
+          _step = StepEnum.getStaff;
       }
   }
   private async void SetCustomer(bool mode)
   {
       if (mode)
       {
-          _step = "setCustomerTrue";
+          _step = StepEnum.setCustomerTrue;
       }
       else
       {
           customersList = (List<CPS.Customers>)await Data.GrpcClient.GetObjectList(Data.ObjectType.Customer);
-          _step = "setCustomerFalse";
+          _step = StepEnum.setCustomerFalse;
 
           StateHasChanged();
       }
@@ -197,13 +209,13 @@
   private void CustomerReady(bool mode)
   {
       if (mode)
-          _step = "customerReadyTrue";
-      else _step = "customerReadyFalse";
+          _firstStepComplited =_step = StepEnum.customerReadyTrue;
+      else _firstStepComplited =_step = StepEnum.customerReadyFalse;
   }
   private void CustomerSetData(CPS.Customers customer)
   {
       customers = customer;
-      _step = "customerReadyFalse";
+      _firstStepComplited =_step = StepEnum.customerReadyFalse;
 
       StateHasChanged();
   }
@@ -223,5 +235,6 @@
       var str = orders.AllProducts + product.ProductName + ", ";
       orders.AllProducts = str;
   }
-  private string _step = "getCustomer";
+  private StepEnum _firstStepComplited;
+  private StepEnum _step = StepEnum.getCustomer;
 }

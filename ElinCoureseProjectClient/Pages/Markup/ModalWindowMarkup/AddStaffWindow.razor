@@ -2,7 +2,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="StaffModalLable">Modal title</h5>
+                <h5 class="modal-title" id="StaffModalLable">Новый сотрудник</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -46,9 +46,17 @@
 
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
-                            <span class="input-group-text" id="Gender">Пол</span>
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="Experience">Пол</span>
+                            </div>
+                            <select class="form-control" id="exampleFormControlSelect1" style="width: 100%" @bind="@staff.Gender">
+                                <option></option>
+                                @foreach (var gen in Genders)
+                                {
+                                    <option value="@gen">@gen</option>
+                                }
+                            </select>
                         </div>
-                        <input type="text" class="form-control" aria-label="staffName" aria-describedby="Gender" @bind-value="@staff.Gender">
                     </div>
 
                     <div class="input-group mb-3">
@@ -103,6 +111,10 @@
   private List<CPS.Departments> departments = new List<CPS.Departments>();
   private List<CPS.Positions> positions = new List<CPS.Positions>();
 
+  private List<string> Genders = new List<string>()
+  {
+      "Муж", "Жен"
+  };
 
   protected override async Task OnInitializedAsync()
   {

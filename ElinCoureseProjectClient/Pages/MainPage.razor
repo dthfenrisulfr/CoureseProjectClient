@@ -10,8 +10,6 @@
             <p> <button type="button" class="btn btn-outline-primary btn-block" data-toggle="modal" data-target="#AddProductModal"> Новый продукт </button></p>
             <p> <button type="button" class="btn btn-outline-primary btn-block" @onclick="@(()=>NavigateTo("Список товаров","Products"))">Список товаров</button></p>
             <p> <button type="button" class="btn btn-outline-primary btn-block" @onclick="@(()=>NavigateTo("Отдел кадров","StaffDepatment"))">Отдел кадров</button></p>
-            <p> <button type="button" class="btn btn-outline-primary btn-block">Печать договора</button></p>
-            <p> <button type="button" class="btn btn-outline-primary btn-block" @onclick="@(()=>NavigateTo("Отчёты","Reports"))">Отчёты</button></p>
         </div>
         <div class="col justify-content-center">
             <div class="jumbotron">
@@ -32,14 +30,14 @@
 <ElinCoureseProjectClient.Pages.InitOrder />
 
 @code {
-  private void NavigateTo(string pageName,string href)
-  {
-      nav.NavigateTo(href, true);
-      var navMenuItem = new ElinCoureseProjectClient.Models.MenuItems();
-      navMenuItem.NavName = pageName;
-      navMenuItem.NavHref = href;
-      ElinCoureseProjectClient.Models.NavMenuList.AddToList(navMenuItem);
+    private void NavigateTo(string pageName, string href)
+    {
+        nav.NavigateTo(href, true);
+        var navMenuItem = new ElinCoureseProjectClient.Models.MenuItems();
+        navMenuItem.NavName = pageName;
+        navMenuItem.NavHref = href;
+        ElinCoureseProjectClient.Models.NavMenuList.AddToList(navMenuItem);
 
-      StateHasChanged();
-  }
+        StateHasChanged();
+    }
 }
