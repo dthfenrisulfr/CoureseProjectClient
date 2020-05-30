@@ -1,0 +1,45 @@
+﻿@inject NavigationManager nav
+@page "/"
+
+<div class="container-fluid mt-5">
+    <div class="row justify-content-center">
+        <div class="col justify-content-center">
+            <p> <button type="button" class="btn btn-outline-primary btn-block" data-toggle="modal" data-target="#AddCustomerModal"> Новый заказчик </button> </p>
+            <p> <button type="button" class="btn btn-outline-primary btn-block" data-toggle="modal" data-target="#InitOrder"> Оформить заказ </button> </p>
+            <p> <button type="button" class="btn btn-outline-primary btn-block" @onclick="@(()=>NavigateTo("Заказы","Orders"))">Заказы</button></p>
+            <p> <button type="button" class="btn btn-outline-primary btn-block" data-toggle="modal" data-target="#AddProductModal"> Новый продукт </button></p>
+            <p> <button type="button" class="btn btn-outline-primary btn-block" @onclick="@(()=>NavigateTo("Список товаров","Products"))">Список товаров</button></p>
+            <p> <button type="button" class="btn btn-outline-primary btn-block" @onclick="@(()=>NavigateTo("Отдел кадров","StaffDepatment"))">Отдел кадров</button></p>
+            <p> <button type="button" class="btn btn-outline-primary btn-block">Печать договора</button></p>
+            <p> <button type="button" class="btn btn-outline-primary btn-block" @onclick="@(()=>NavigateTo("Отчёты","Reports"))">Отчёты</button></p>
+        </div>
+        <div class="col justify-content-center">
+            <div class="jumbotron">
+                <h1 class="display-4">Главная</h1>
+                <p class="lead">Это клиентское приложение реализовано в целях демонстрации работы gRPC в качестве сервера и BlazorApp в качестве клиента</p>
+                <hr class="my-4">
+                <p>Некоторые страницы демонстрируют возможности Blazor и имеют некорректный функционал</p>
+                <p class="lead">
+                    <a class="btn btn-primary btn-lg" href="https://github.com/dthfenrisulfr?tab=repositories" role="button">Исходный код</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ElinCoureseProjectClient.Pages.Markup.ModalWindowMarkup.AddProductModal />
+<ElinCoureseProjectClient.Pages.Markup.ModalWindowMarkup.AddCustomerModal />
+<ElinCoureseProjectClient.Pages.InitOrder />
+
+@code {
+  private void NavigateTo(string pageName,string href)
+  {
+      nav.NavigateTo(href, true);
+      var navMenuItem = new ElinCoureseProjectClient.Models.MenuItems();
+      navMenuItem.NavName = pageName;
+      navMenuItem.NavHref = href;
+      ElinCoureseProjectClient.Models.NavMenuList.AddToList(navMenuItem);
+
+      StateHasChanged();
+  }
+}

@@ -1,10 +1,6 @@
-﻿@page "/products"
-
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#AddProductModal">
-    Запустить модальное окно
-</button>
-
-<table class="table table-hover w-50 table-sm">
+﻿@page "/Products"
+@inject IJSRuntime JS
+<table class="table table-hover w-50 table-sm mt-3">
     <thead class="thead-light">
         <tr>
             <th scope="col">Наименование</th>
@@ -15,37 +11,43 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var pos in products)
+        @foreach (var prod in products)
         {
-        <tr>
-            <td>@pos.ProductName</td>
-            <td>@pos.NumberOfGlasses</td>
-            <td>@pos.Heght</td>
-            <td>@pos.Width</td>
-            <td>@pos.Weight</td>
-            <td><button class="btn btn-outline-secondary" @onclick="(()=>DeleteProduct(pos))"><i class="oi oi-account-login" title="icon name" aria-hidden="true"></i></button></td>
-        </tr>
+            <tr @ondblclick="@(()=>OpenUpdateModal(prod.ProductID))">
+                <td>@prod.ProductName</td>
+                <td>@prod.NumberOfGlasses</td>
+                <td>@prod.Heght</td>
+                <td>@prod.Width</td>
+                <td>@prod.Weight</td>
+            </tr>
         }
     </tbody>
 </table>
 
-<ElinCoureseProjectClient.Pages.Markup.ModalWindowMarkup.AddProductModal />
+<ElinCoureseProjectClient.Pages.Markup.ModalWindowMarkup.UpdateProductModal Product="targetField"/>
 
 @code {
-    protected override async Task OnInitializedAsync()
-    {
-        products = await Data.GrpcClient.GetObjectList(Data.ObjectType.Product) as List<CPS.Products>;
-        Data.GrpcClient.StateChanged += OnStateChanged;
-        StateHasChanged();
-    }
-    private void DeleteProduct(CPS.Products products)
-    {
-        Data.GrpcClient.DeleteObject(products.ProductID, Data.ObjectType.Product);
-    }
-    private async void OnStateChanged(object sender, EventArgs arg)
-    {
-        products = await Data.GrpcClient.GetObjectList(Data.ObjectType.Product) as List<CPS.Products>;
-        await InvokeAsync(() => StateHasChanged());
-    }
-    List<CPS.Products> products = new List<CPS.Products>();
+  private CPS.Products targetField { get; set; }
+
+  protected override async Task OnInitializedAsync()
+  {
+      products = await Data.GrpcClient.GetObjectList(Data.ObjectType.Product) as List<CPS.Products>;
+      Data.GrpcClient.StateChanged += OnStateChanged;
+      await InvokeAsync(() => StateHasChanged());
+  }
+  private void DeleteProduct(CPS.Products products)
+  {
+      Data.GrpcClient.DeleteObject(products.ProductID, Data.ObjectType.Product);
+  }
+  private async void OnStateChanged(object sender, EventArgs arg)
+  {
+      products = await Data.GrpcClient.GetObjectList(Data.ObjectType.Product) as List<CPS.Products>;
+      await InvokeAsync(() => StateHasChanged());
+  }
+  private async void OpenUpdateModal(int ID)
+  {
+      targetField = (Data.GrpcClient.GetOneObject(ID, Data.ObjectType.Product) as CPS.Products);
+      await JS.InvokeVoidAsync("UpdateProductModal");
+  }
+  List<CPS.Products> products = new List<CPS.Products>();
 }

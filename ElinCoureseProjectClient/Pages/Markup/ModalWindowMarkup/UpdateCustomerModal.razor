@@ -1,0 +1,81 @@
+﻿<div class="modal fade" id="UpdateCustomerModal" tabindex="-1" role="dialog" aria-labelledby="UpdateCustomerModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="UpdateCustomerModalLabel">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="UpdateFieldPositionName">Орагнизация</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="UpdateFieldPositionName" aria-describedby="UpdateFieldPositionName" @bind-value="Customers.Organization">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="UpdateFieldSalary">Имя</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="UpdateFieldSalary" aria-describedby="UpdateFieldSalary" @bind-value="Customers.Name">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="UpdateFieldSalary">Фамилия</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="UpdateFieldSalary" aria-describedby="UpdateFieldSalary" @bind-value="Customers.SecondName">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="UpdateFieldSalary">Адрес</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="UpdateFieldSalary" aria-describedby="UpdateFieldSalary" @bind-value="Customers.Address">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="UpdateFieldSalary">Дата заключения договора</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="UpdateFieldSalary" aria-describedby="UpdateFieldSalary" @bind-value="Date">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="UpdateFieldSalary">Способ оплаты</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="UpdateFieldSalary" aria-describedby="UpdateFieldSalary" @bind-value="Customers.PaymentAccount">
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="@(() => Save())">Сохранить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code{
+  [Parameter]
+  public CPS.Customers Customers { get; set; }
+  protected override void OnInitialized()
+  {
+      Customers = new CPS.Customers();
+  }
+  private void Save()
+  {
+      Data.GrpcClient.UpdateObject(Customers, Data.ObjectType.Customer);
+  }
+
+  private string Date {
+      get { return new DateTime(Customers.DateOfContractCompletion).ToShortDateString(); }
+      set
+      {
+          var partsOfDate = value.Split('.');
+          var Date = new DateTime(Convert.ToInt32(partsOfDate[2]),
+              Convert.ToInt32(partsOfDate[1]),
+              Convert.ToInt32(partsOfDate[0]));
+          Customers.DateOfContractCompletion = Date.Ticks;
+      }
+  }
+}

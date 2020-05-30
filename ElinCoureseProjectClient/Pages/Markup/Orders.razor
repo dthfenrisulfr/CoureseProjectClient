@@ -1,10 +1,7 @@
-﻿@page "/orders"
+﻿@page "/Orders"
+@inject IJSRuntime JS
 
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#AddOrderModal">
-        Запустить модальное окно
-    </button>
-
-<table class="table table-hover w-50 table-sm">
+<table class="table table-hover w-50 table-sm mt-3">
     <thead class="thead-light">
         <tr>
             <th scope="col">Готовность</th>
@@ -19,31 +16,44 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var pos in orders)
+        @foreach (var order in orders)
         {
-        <tr>
-            <td>@pos.Condition</td>
-            <td>@pos.Customer.Name</td>
-            <td>@pos.Customer.SecondName</td>
-            <td>@pos.Customer.Organization</td>
-            <td>@pos.Customer.Address</td>
-            <td>@ToDateTime(pos.Date)</td>
-            <td>@pos.AllProducts</td>
-            <td>@pos.OrderID</td>
-            <td>@pos.Staff.SecondName  @pos.Staff.Name</td>
-        </tr>
+            <tr @ondblclick="@(()=>OpenUpdateModal(order.OrderID))">
+                <td>@order.Condition</td>
+                <td>@order.Customer.Name</td>
+                <td>@order.Customer.SecondName</td>
+                <td>@order.Customer.Organization</td>
+                <td>@order.Customer.Address</td>
+                <td>@ToDateTime(order.Date)</td>
+                <td>@order.AllProducts</td>
+                <td>@order.OrderID</td>
+                <td>@order.Staff.SecondName  @order.Staff.Name</td>
+            </tr>
         }
     </tbody>
 </table>
 
-<ElinCoureseProjectClient.Pages.Markup.ModalWindowMarkup.AddOrderModal />
+<ElinCoureseProjectClient.Pages.Markup.ModalWindowMarkup.UpdateOrderModal Order="targetField" />
 
 @code {
-    protected override async Task OnInitializedAsync()
-    {
-        orders = await Data.GrpcClient.GetObjectList(Data.ObjectType.Order) as List<CPS.Orders>;
-        StateHasChanged();
-    }
-    string ToDateTime(long time) => new DateTime(time).ToShortDateString();
-    List<CPS.Orders> orders = new List<CPS.Orders>();
+  private CPS.Orders targetField { get; set; }
+
+  protected override async Task OnInitializedAsync()
+  {
+      orders = await Data.GrpcClient.GetObjectList(Data.ObjectType.Order) as List<CPS.Orders>;
+      Data.GrpcClient.StateChanged += OnStateChanged;
+      await InvokeAsync(() => StateHasChanged());
+  }
+  private async void OnStateChanged(object sender, EventArgs arg)
+  {
+      orders = await Data.GrpcClient.GetObjectList(Data.ObjectType.Order) as List<CPS.Orders>;
+      await InvokeAsync(() => StateHasChanged());
+  }
+  private async void OpenUpdateModal(int ID)
+  {
+      targetField = (Data.GrpcClient.GetOneObject(ID, Data.ObjectType.Order) as CPS.Orders);
+      await JS.InvokeVoidAsync("UpdateOrderModal");
+  }
+  string ToDateTime(long time) => new DateTime(time).ToShortDateString();
+  List<CPS.Orders> orders = new List<CPS.Orders>();
 }

@@ -1,11 +1,11 @@
-﻿@page "/staff"
+﻿@page "/Staff"
+@inject IJSRuntime JS
 
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#StaffModal">
-    Запустить модальное окно
-</button>
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#StaffModal"> Новый сотрудник </button>
 
+<button class="btn btn-outline-secondary" @onclick="SecNameSort">Отсортировать по фамилии</button>
 
-<table class="table table-hover w-50 table-sm">
+<table class="table table-hover w-50 table-sm mt-3">
     <thead class="thead-light">
         <tr>
             <th scope="col">Номер пасспорта</th>
@@ -21,43 +21,66 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var pos in staff)
+        @foreach (var staff in staff)
         {
-        <tr>
-            <td>@pos.Passport</td>
-            <td>@pos.SecondName</td>
-            <td>@pos.Name</td>
-            <td>@pos.MiddleName</td>
-            <td>@pos.Gender</td>
-            <td>@pos.Experience</td>
-            <td>@ToDateTime(pos.BDate)</td>
-            <td>@ToDateTime(pos.DateOfReceipt)</td>
-            <td>@pos.Department</td>
-            <td>@pos.Position</td>
-            <td><button class="btn btn-outline-secondary" @onclick="(() => DeleteStaff(pos))"><i class="oi oi-account-login" title="icon name" aria-hidden="true"></i></button></td>
-        </tr>
+            <tr @ondblclick="@(()=>OpenUpdateModal(staff.Passport))">
+                <td>@staff.Passport</td>
+                <td>@staff.SecondName</td>
+                <td>@staff.Name</td>
+                <td>@staff.MiddleName</td>
+                <td>@staff.Gender</td>
+                <td>@staff.Experience</td>
+                <td>@ToDateTime(staff.BDate)</td>
+                <td>@ToDateTime(staff.DateOfReceipt)</td>
+                <td>@staff.Department</td>
+                <td>@staff.Position</td>
+            </tr>
         }
     </tbody>
 </table>
 
 <ElinCoureseProjectClient.Pages.Markup.ModalWindowMarkup.AddStaffWindow />
+<ElinCoureseProjectClient.Pages.Markup.ModalWindowMarkup.UpdateStaffModal Staff="targetField" />
 
 @code {
-    protected override async Task OnInitializedAsync()
-    {
-        staff = await Data.GrpcClient.GetObjectList(Data.ObjectType.Staff) as List<CPS.Staff>;
-        Data.GrpcClient.StateChanged += OnStateChanged;
-        StateHasChanged();
-    }
-    private void DeleteStaff(CPS.Staff staff)
-    {
-        Data.GrpcClient.DeleteObject(staff.Passport, Data.ObjectType.Staff);
-    }
-    private async void OnStateChanged(object sender, EventArgs arg)
-    {
-        staff = await Data.GrpcClient.GetObjectList(Data.ObjectType.Staff) as List<CPS.Staff>;
-        await InvokeAsync(() => StateHasChanged());
-    }
-    string ToDateTime(long time) => new DateTime(time).ToShortDateString();
-    List<CPS.Staff> staff = new List<CPS.Staff>();
+  private CPS.Staff targetField { get; set; }
+
+  bool isAsc = false;
+
+  protected override async Task OnInitializedAsync()
+  {
+      staff = await Data.GrpcClient.GetObjectList(Data.ObjectType.Staff) as List<CPS.Staff>;
+      Data.GrpcClient.StateChanged += OnStateChanged;
+      await InvokeAsync(() => StateHasChanged());
+  }
+  private void SecNameSort()
+  {
+      if (!isAsc)
+      {
+          staff = staff.OrderBy(x => x.SecondName).ToList();
+          isAsc = true;
+      }
+      else
+      {
+          staff = staff.OrderByDescending(x => x.SecondName).ToList();
+          isAsc = false;
+      }
+
+  }
+  private void DeleteStaff(CPS.Staff staff)
+  {
+      Data.GrpcClient.DeleteObject(staff.Passport, Data.ObjectType.Staff);
+  }
+  private async void OnStateChanged(object sender, EventArgs arg)
+  {
+      staff = await Data.GrpcClient.GetObjectList(Data.ObjectType.Staff) as List<CPS.Staff>;
+      await InvokeAsync(() => StateHasChanged());
+  }
+  private async void OpenUpdateModal(int ID)
+  {
+      targetField = (Data.GrpcClient.GetOneObject(ID, Data.ObjectType.Staff) as CPS.Staff);
+      await JS.InvokeVoidAsync("UpdateStaffModal");
+  }
+  string ToDateTime(long time) => new DateTime(time).ToShortDateString();
+  List<CPS.Staff> staff = new List<CPS.Staff>();
 }

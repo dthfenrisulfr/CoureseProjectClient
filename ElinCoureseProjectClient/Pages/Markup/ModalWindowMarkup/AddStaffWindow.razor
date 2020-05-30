@@ -41,7 +41,7 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text" id="BDate">Дата рождения</span>
                         </div>
-                        <input type="text" class="form-control" aria-label="staffName" aria-describedby="BDate" @bind-value="@staff.BDate">
+                        <input type="text" class="form-control" aria-label="staffName" aria-describedby="BDate" @bind-value="@BDate">
                     </div>
 
                     <div class="input-group mb-3">
@@ -60,28 +60,32 @@
 
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
-                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@depTitle</button>
-                            <div class="dropdown-menu">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="Experience">Отдел</span>
+                            </div>
+                            <select class="form-control" id="exampleFormControlSelect1" style="width: 100%" @bind="@staff.Department">
+                                <option></option>
                                 @foreach (var dep in departments)
                                 {
-                                    <a class="dropdown-item" @onclick="(()=>BindDepatment(dep))">@dep.Department</a>
+                                    <option value="@dep.DepartmentID">@dep.Department</option>
                                 }
-                            </div>
+                            </select>
                         </div>
-                        <input type="text" class="form-control" aria-label="Text input with dropdown button">
                     </div>
 
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
-                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@posTitle</button>
-                            <div class="dropdown-menu">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="Experience">Должность</span>
+                            </div>
+                            <select class="form-control" id="exampleFormControlSelect1" style="width: 100%" @bind="@staff.Position">
+                                <option></option>
                                 @foreach (var pos in positions)
                                 {
-                                    <a class="dropdown-item" @onclick="(()=>BindPosition(pos))">@pos.Position</a>
+                                    <option value="@pos.PositionID">@pos.Position</option>
                                 }
-                            </div>
+                            </select>
                         </div>
-                        <input type="text" class="form-control" aria-label="Text input with dropdown button">
                     </div>
                 </form>
             </div>
@@ -95,36 +99,37 @@
 </div>
 
 @code{
-    private CPS.Staff staff = new CPS.Staff();
-    private List<CPS.Departments> departments = new List<CPS.Departments>();
-    private List<CPS.Positions> positions = new List<CPS.Positions>();
-    private string depTitle = "Отдел";
-    private string posTitle = "Должность";
+  private CPS.Staff staff = new CPS.Staff();
+  private List<CPS.Departments> departments = new List<CPS.Departments>();
+  private List<CPS.Positions> positions = new List<CPS.Positions>();
 
 
-    //private DateTime DateTime = new DateTime();
+  protected override async Task OnInitializedAsync()
+  {
+      departments = await Data.GrpcClient.GetObjectList(Data.ObjectType.Depatment) as List<CPS.Departments>;
+      positions = await Data.GrpcClient.GetObjectList(Data.ObjectType.Position) as List<CPS.Positions>;
+  }
 
-    protected override async Task OnInitializedAsync()
-    {
-        departments = await Data.GrpcClient.GetObjectList(Data.ObjectType.Depatment) as List<CPS.Departments>;
-        positions = await Data.GrpcClient.GetObjectList(Data.ObjectType.Position) as List<CPS.Positions>;
-    }
+  private void Save()
+  {
+      staff.DateOfReceipt = DateTime.Now.Ticks;
+      var dep = departments.Where(x => x.DepartmentID.ToString() == staff.Department).FirstOrDefault();
+      dep.NumberOfEmployees++;
+      Data.GrpcClient.UpdateObject(dep, Data.ObjectType.Depatment);
+      Data.GrpcClient.AddObject(staff, Data.ObjectType.Staff);
+  }
 
-    private void Save()
-    {
-        staff.DateOfReceipt = DateTime.Now.Ticks;
-        Data.GrpcClient.AddObject(staff, Data.ObjectType.Staff);
-    }
-    private void BindDepatment(CPS.Departments department)
-    {
-        staff.Department = department.DepartmentID.ToString();
-        depTitle = department.Department;
-        StateHasChanged();
-    }
-    private void BindPosition(CPS.Positions position)
-    {
-        staff.Position = position.PositionID.ToString();
-        posTitle = position.Position;
-        StateHasChanged();
-    }
+  private string BDate
+  {
+      get { return new DateTime(_date).ToShortDateString(); }
+      set
+      {
+          var partsOfDate = value.Split('.');
+          var Date = new DateTime(Convert.ToInt32(partsOfDate[2]),
+              Convert.ToInt32(partsOfDate[1]),
+              Convert.ToInt32(partsOfDate[0]));
+          staff.BDate = _date = Date.Ticks;
+      }
+  }
+  long _date;
 }

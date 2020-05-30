@@ -1,0 +1,116 @@
+﻿<div class="modal fade" id="UpdateStaffModal" tabindex="-1" role="dialog" aria-labelledby="UpdateStaffModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="UpdateStaffModalLabel">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="UpdateFieldPositionName">Фамилия</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="UpdateFieldPositionName" aria-describedby="UpdateFieldPositionName" @bind-value="Staff.SecondName">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="UpdateFieldSalary">Имя</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="UpdateFieldSalary" aria-describedby="UpdateFieldSalary" @bind-value="Staff.Name">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="UpdateFieldSalary">Отчество</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="UpdateFieldSalary" aria-describedby="UpdateFieldSalary" @bind-value="Staff.MiddleName">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="UpdateFieldSalary">Дата рождения</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="UpdateFieldSalary" aria-describedby="UpdateFieldSalary" @bind-value="BDate">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="UpdateFieldSalary">Номер паспорта</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="UpdateFieldSalary" aria-describedby="UpdateFieldSalary" @bind-value="Staff.Passport">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="UpdateFieldSalary">Пол</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="UpdateFieldSalary" aria-describedby="UpdateFieldSalary" @bind-value="Staff.Gender">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="UpdateFieldSalary">Отдел</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="UpdateFieldSalary" aria-describedby="UpdateFieldSalary" @bind-value="Staff.Department">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="UpdateFieldSalary">Должность</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="UpdateFieldSalary" aria-describedby="UpdateFieldSalary" @bind-value="Staff.Position">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="UpdateFieldSalary">Опыт</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="UpdateFieldSalary" aria-describedby="UpdateFieldSalary" @bind-value="Staff.Experience">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="UpdateFieldSalary">Дата найма</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="UpdateFieldSalary" aria-describedby="UpdateFieldSalary" @bind-value="RecDate">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="@(() => Save())">Сохранить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code{
+  [Parameter]
+  public CPS.Staff Staff { get; set; }
+  protected override void OnInitialized()
+  {
+      Staff = new CPS.Staff();
+  }
+  private void Save()
+  {
+      Data.GrpcClient.UpdateObject(Staff, Data.ObjectType.Staff);
+  }
+  private string BDate
+  {
+      get { return new DateTime(Staff.BDate).ToShortDateString(); }
+      set
+      {
+          var partsOfDate = value.Split('.');
+          var Date = new DateTime(Convert.ToInt32(partsOfDate[2]),
+              Convert.ToInt32(partsOfDate[1]),
+              Convert.ToInt32(partsOfDate[0]));
+          Staff.BDate = Date.Ticks;
+      }
+  }
+  private string RecDate
+  {
+      get { return new DateTime(Staff.DateOfReceipt).ToShortDateString(); }
+      set
+      {
+          var partsOfDate = value.Split('.');
+          var Date = new DateTime(Convert.ToInt32(partsOfDate[2]),
+              Convert.ToInt32(partsOfDate[1]),
+              Convert.ToInt32(partsOfDate[0]));
+          Staff.DateOfReceipt = Date.Ticks;
+      }
+  }
+}

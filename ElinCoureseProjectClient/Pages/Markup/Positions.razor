@@ -1,10 +1,9 @@
-﻿@page "/positions"
+﻿@page "/Positions"
 @inject IJSRuntime JS
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#TwoColumnModal">
-        Запустить модальное окно
-    </button>
 
-    <table class="table table-hover w-50 table-sm">
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#TwoColumnModal"> Добавить должность </button>
+
+    <table class="table table-hover w-50 table-sm mt-3">
         <thead class="thead-light">
             <tr>
                 <th scope="col">Наименование</th>
@@ -14,10 +13,9 @@
         <tbody>
             @foreach (var pos in positions)
             {
-            <tr @ondblclick="(()=>OpenUpdateModal(pos.PositionID))">
+            <tr @ondblclick="(() => OpenUpdateModal(pos.PositionID))">
                 <td>@pos.Position</td>
                 <td>@pos.Salary</td>
-                <td><button class="btn btn-outline-secondary" @onclick="(()=>DeletePosition(pos))"><i class="oi oi-account-login" title="icon name" aria-hidden="true"></i></button></td>
             </tr>
             }
         </tbody>
@@ -27,27 +25,27 @@
 <ElinCoureseProjectClient.Pages.Markup.ModalWindowMarkup.UpdatePositionModal Position="targetField" />
 
     @code {
-        private CPS.Positions targetField { get; set; }
+      private CPS.Positions targetField { get; set; }
 
-        protected override async Task OnInitializedAsync()
-        {
-            positions = await Data.GrpcClient.GetObjectList(Data.ObjectType.Position) as List<CPS.Positions>;
-            Data.GrpcClient.StateChanged += OnStateChanged;
-            StateHasChanged();
-        }
-        private void DeletePosition(CPS.Positions positions)
-        {
-            Data.GrpcClient.DeleteObject(positions.PositionID, Data.ObjectType.Position);
-        }
-        private async void OnStateChanged(object sender, EventArgs arg)
-        {
-            positions = await Data.GrpcClient.GetObjectList(Data.ObjectType.Position) as List<CPS.Positions>;
-            await InvokeAsync(() => StateHasChanged());
-        }
-        private async void OpenUpdateModal(int ID)
-        {
-            targetField = (Data.GrpcClient.GetOneObject(ID, Data.ObjectType.Position) as CPS.Positions);
-            await JS.InvokeVoidAsync("UpdateModal");
-        }
-        List<CPS.Positions> positions = new List<CPS.Positions>();
+      protected override async Task OnInitializedAsync()
+      {
+          positions = await Data.GrpcClient.GetObjectList(Data.ObjectType.Position) as List<CPS.Positions>;
+          Data.GrpcClient.StateChanged += OnStateChanged;
+          await InvokeAsync(() => StateHasChanged());
+      }
+      private void DeletePosition(CPS.Positions positions)
+      {
+          Data.GrpcClient.DeleteObject(positions.PositionID, Data.ObjectType.Position);
+      }
+      private async void OnStateChanged(object sender, EventArgs arg)
+      {
+          positions = await Data.GrpcClient.GetObjectList(Data.ObjectType.Position) as List<CPS.Positions>;
+          await InvokeAsync(() => StateHasChanged());
+      }
+      private async void OpenUpdateModal(int ID)
+      {
+          targetField = (Data.GrpcClient.GetOneObject(ID, Data.ObjectType.Position) as CPS.Positions);
+          await JS.InvokeVoidAsync("UpdatePositionModal");
+      }
+      List<CPS.Positions> positions = new List<CPS.Positions>();
     }

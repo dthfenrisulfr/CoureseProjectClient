@@ -1,10 +1,9 @@
-﻿@page "/customers"
+﻿@page "/Customers"
+@inject IJSRuntime JS
 
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#AddCustomerModal">
-        Запустить модальное окно
-    </button>
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#AddCustomerModal"> Новый заказчик </button>
 
-<table class="table table-hover w-50 table-sm">
+<table class="table table-hover w-50 table-sm mt-3">
     <thead class="thead-light">
         <tr>
             <th scope="col">Организация</th>
@@ -16,28 +15,42 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var pos in customers)
+        @foreach (var customer in customers)
         {
-        <tr>
-            <td>@pos.Organization</td>
-            <td>@pos.Name</td>
-            <td>@pos.SecondName</td>
-            <td>@pos.Address</td>
-            <td>@ToDateTime(pos.DateOfContractCompletion)</td>
-            <td>@pos.PaymentAccount</td>
-        </tr>
+            <tr @ondblclick="@(()=>OpenUpdateModal(customer.CustomerID))">
+                <td>@customer.Organization</td>
+                <td>@customer.Name</td>
+                <td>@customer.SecondName</td>
+                <td>@customer.Address</td>
+                <td>@ToDateTime(customer.DateOfContractCompletion)</td>
+                <td>@customer.PaymentAccount</td>
+            </tr>
         }
     </tbody>
 </table>
 
 <ElinCoureseProjectClient.Pages.Markup.ModalWindowMarkup.AddCustomerModal />
+<ElinCoureseProjectClient.Pages.Markup.ModalWindowMarkup.UpdateCustomerModal Customers="targetField" />
 
 @code {
-    protected override async Task OnInitializedAsync()
-    {
-        customers = await Data.GrpcClient.GetObjectList(Data.ObjectType.Customer) as List<CPS.Customers>;
-        StateHasChanged();
-    }
-    string ToDateTime(long time) => new DateTime(time).ToShortDateString();
-    List<CPS.Customers> customers = new List<CPS.Customers>();
+  private CPS.Customers targetField { get; set; }
+
+  protected override async Task OnInitializedAsync()
+  {
+      customers = await Data.GrpcClient.GetObjectList(Data.ObjectType.Customer) as List<CPS.Customers>;
+      Data.GrpcClient.StateChanged += OnStateChanged;
+      await InvokeAsync(() => StateHasChanged());
+  }
+  private async void OnStateChanged(object sender, EventArgs arg)
+  {
+      customers = await Data.GrpcClient.GetObjectList(Data.ObjectType.Customer) as List<CPS.Customers>;
+      await InvokeAsync(()=>StateHasChanged());
+  }
+  private async void OpenUpdateModal(int ID)
+  {
+      targetField = (Data.GrpcClient.GetOneObject(ID, Data.ObjectType.Customer) as CPS.Customers);
+      await JS.InvokeVoidAsync("UpdateCustomerModal");
+  }
+  string ToDateTime(long time) => new DateTime(time).ToShortDateString();
+  List<CPS.Customers> customers = new List<CPS.Customers>();
 }

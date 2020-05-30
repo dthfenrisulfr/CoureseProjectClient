@@ -1,0 +1,69 @@
+﻿<div class="modal fade" id="UpdateOrderModal" tabindex="-1" role="dialog" aria-labelledby="UpdateOrderModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="UpdateOrderModalLabel">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                @*<div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="UpdateFieldPositionName">Наименование должности</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="UpdateFieldPositionName" aria-describedby="UpdateFieldPositionName" @bind-value="Order.Customer.Name">
+                </div>*@
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="UpdateFieldSalary">Оклад</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="UpdateFieldSalary" aria-describedby="UpdateFieldSalary" @bind-value="Order.AllProducts">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="UpdateFieldPositionName">Наименование должности</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="UpdateFieldPositionName" aria-describedby="UpdateFieldPositionName" @bind-value="Date">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="UpdateFieldPositionName">Наименование должности</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="UpdateFieldPositionName" aria-describedby="UpdateFieldPositionName" @bind-value="Order.Condition">
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="@(() => Save())">Сохранить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code{
+  [Parameter]
+  public CPS.Orders Order { get; set; }
+  protected override void OnInitialized()
+  {
+      Order = new CPS.Orders();
+  }
+  private void Save()
+  {
+      Data.GrpcClient.UpdateObject(Order, Data.ObjectType.Order);
+  }
+  private string Date
+  {
+      get { return new DateTime(Order.Date).ToShortDateString(); }
+      set
+      {
+          var partsOfDate = value.Split('.');
+          var Date = new DateTime(Convert.ToInt32(partsOfDate[2]),
+              Convert.ToInt32(partsOfDate[1]),
+              Convert.ToInt32(partsOfDate[0]));
+          Order.Date = Date.Ticks;
+      }
+  }
+}

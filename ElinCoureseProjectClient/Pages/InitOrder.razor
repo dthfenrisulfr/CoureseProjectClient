@@ -1,0 +1,227 @@
+﻿<div class="modal fade" id="InitOrder" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="InitOrderLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="InitOrderLabel">Оформить заказ</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                @if (_step == "getCustomer")
+                {
+                    <button type="button" class="btn btn-primary btn-lg btn-block" @onclick="@(()=>SetCustomer(true))"> Новый клиент</button>
+                    <button type="button" class="btn btn-primary btn-lg btn-block" @onclick="@(()=>SetCustomer(false))">Выбрать из списка</button>
+                }
+                @if (_step == "setCustomerTrue")
+                {
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="CustomerName">Имя заказчика</span>
+                        </div>
+                        <input type="text" class="form-control" aria-label="CustomerName" aria-describedby="CustomerName" @bind-value="customers.Name">
+                    </div>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="CustomerSecondName">Фамилия заказчика</span>
+                        </div>
+                        <input type="text" class="form-control" aria-label="CustomerSecondName" aria-describedby="CustomerSecondName" @bind-value="customers.SecondName">
+                    </div>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="Organization">Организация</span>
+                        </div>
+                        <input type="text" class="form-control" aria-label="Organization" aria-describedby="Organization" @bind-value="customers.Organization">
+                    </div>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="Address">Адрес</span>
+                        </div>
+                        <input type="text" class="form-control" aria-label="Address" aria-describedby="Address" @bind-value="customers.Address">
+                    </div>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="PaymentAccount">Тип оплаты</span>
+                        </div>
+                        <input type="text" class="form-control" aria-label="PaymentAccount" aria-describedby="PaymentAccount" @bind-value="customers.PaymentAccount">
+                    </div>
+                    <button type="button" class="btn btn-secondary" @onclick="@(()=>CustomerReady(true))">Сохранить</button>
+                }
+                @if (_step == "setCustomerFalse")
+                {
+
+                    <select multiple class="form-control" id="exampleFormControlSelect2">
+                        <option></option>
+                        @foreach (var cust in customersList)
+                        {
+                            <option value="@cust.CustomerID" @onclick="@(()=>CustomerSetData(cust))">@cust.SecondName @cust.Name - @cust.Organization</option>
+                        }
+                    </select>
+                }
+                @if (_step == "customerReadyTrue")
+                {
+                    <button type="button" class="btn btn-success btn-lg btn-block" @onclick="@(()=>SetCustomer(true))"> Новый клиент</button>
+                    <button type="button" class="btn btn-primary btn-lg btn-block" @onclick="@(()=>SetCustomer(false))">Выбрать из списка</button>
+                }
+                @if (_step == "customerReadyFalse")
+                {
+                    <button type="button" class="btn btn-primary btn-lg btn-block" @onclick="@(()=>SetCustomer(true))"> Новый клиент</button>
+                    <button type="button" class="btn btn-success btn-lg btn-block" @onclick="@(()=>SetCustomer(false))">Выбрать из списка</button>
+                }
+                @if (_step == "getProducts")
+                {
+                    <select multiple class="form-control" id="exampleFormControlSelect2">
+                        <option></option>
+                        @foreach (var prod in productsList)
+                        {
+                            <option value="@prod.ProductID" @onclick="@(()=>ProductSetData(prod))">@prod.ProductName</option>
+                        }
+                    </select>
+                    @foreach (var prod in getingProducts)
+                    {
+                        <i>@prod.ProductName,</i>
+                    }
+                }
+                @if (_step == "getStaff")
+                {
+                    <select multiple class="form-control" id="exampleFormControlSelect2">
+                        <option></option>
+                        @foreach (var staff in Staffs)
+                        {
+                            <option value="@staff.Passport" @onclick="@(()=>StaffSetData(staff))">@staff.SecondName @staff.Name</option>
+                        }
+                    </select>
+                }
+                @if (_step == "getOrder")
+                {
+                    <p>Имя заказчика: @customers.SecondName @customers.Name</p>
+                    <p>Организация: @customers.Organization</p>
+                    <p>Адрес заказчика: @customers.Address</p>
+                    <p>Товары:
+                        @foreach (var prod in getingProducts)
+                        {
+                            <i>@prod.ProductName,</i>
+                        }
+                    </p>
+                    <p>Выполнил: @staff.SecondName @staff.Name</p>
+                }
+            </div>
+            <div class="modal-footer">
+                @if (_step != "getOrder")
+                {
+                    <button type="button" class="btn btn-secondary" @onclick="@(()=>PrevStep())">Назад</button>
+                    <button type="button" class="btn btn-primary" @onclick="@(()=>NextStep())">Далее</button>
+                }
+                else
+                {
+                    <button type="button" class="btn btn-secondary" @onclick="@(()=>PrevStep())">Назад</button>
+                    <button type="button" class="btn btn-primary" @onclick="@(()=>NextStep())">Сохранить</button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+@code {
+  private CPS.Customers customers = new CPS.Customers();
+  private CPS.Products products = new CPS.Products();
+  private CPS.Staff staff = new CPS.Staff();
+  private CPS.Orders orders = new CPS.Orders();
+  private List<CPS.Staff> Staffs = new List<CPS.Staff>();
+  private List<CPS.Customers> customersList = new List<CPS.Customers>();
+  private List<CPS.Products> productsList = new List<CPS.Products>();
+  private List<CPS.Products> getingProducts = new List<CPS.Products>();
+  private async Task<int>  NextStep()
+  {
+      if (_step == "customerReadyTrue" || _step == "customerReadyFalse")
+      {
+          productsList = (List<CPS.Products>)await Data.GrpcClient.GetObjectList(Data.ObjectType.Product);
+          _step = "getProducts";
+
+          StateHasChanged();
+          return 1;
+      }
+      if (_step == "getProducts")
+      {
+          Staffs = (List<CPS.Staff>)await Data.GrpcClient.GetObjectList(Data.ObjectType.Staff);
+          _step = "getStaff";
+          StateHasChanged();
+          return 1;
+      }
+      if (_step == "getStaff")
+      {
+          _step = "getOrder";
+          StateHasChanged();
+          return 1;
+      }
+      if(_step == "getOrder")
+      {
+          orders.Condition = "false";
+          orders.Date = DateTime.Now.Ticks;
+          foreach (var prod in getingProducts) 
+          {
+              SetOrderProduct(prod.ProductID);
+          }
+          orders.Customer = customers;
+          orders.Staff = staff;
+          Data.GrpcClient.AddObject(orders, Data.ObjectType.Order);
+          return 1;
+      }
+      return 0;
+  }
+  private void PrevStep()
+  {
+      var prevStep = "";
+      if (_step == "getCustomer" || _step == "customerReadyTrue" || _step == "customerReadyFalse")
+      {
+          prevStep = _step;
+      }
+      if (_step == "productsIsSet")
+      {
+          _step = prevStep;
+      }
+  }
+  private async void SetCustomer(bool mode)
+  {
+      if (mode)
+      {
+          _step = "setCustomerTrue";
+      }
+      else
+      {
+          customersList = (List<CPS.Customers>)await Data.GrpcClient.GetObjectList(Data.ObjectType.Customer);
+          _step = "setCustomerFalse";
+
+          StateHasChanged();
+      }
+  }
+  private void CustomerReady(bool mode)
+  {
+      if (mode)
+          _step = "customerReadyTrue";
+      else _step = "customerReadyFalse";
+  }
+  private void CustomerSetData(CPS.Customers customer)
+  {
+      customers = customer;
+      _step = "customerReadyFalse";
+
+      StateHasChanged();
+  }
+  private void ProductSetData(CPS.Products product)
+  {
+      getingProducts.Add(product);
+
+      StateHasChanged();
+  }
+  private void StaffSetData(CPS.Staff staff)
+  {
+      this.staff = staff;
+  }
+  private void SetOrderProduct(int value)
+  {
+      var product = Data.GrpcClient.GetOneObject(value, Data.ObjectType.Product) as CPS.Products;
+      var str = orders.AllProducts + product.ProductName + ", ";
+      orders.AllProducts = str;
+  }
+  private string _step = "getCustomer";
+}

@@ -1,0 +1,44 @@
+﻿@page "/StaffDepatment"
+<h3 class="mb-3">Страница отдела кадров</h3>
+
+@if (_isMode == null)
+{
+    <button type="button" class="btn btn-primary" @onclick="@(()=>ChangeMode(false))">Должности</button>
+    <button type="button" class="btn btn-primary" @onclick="@(()=>ChangeMode(true))">Отделы</button>
+    <ElinCoureseProjectClient.Pages.Markup.Staff />
+}
+@if (_isMode == false)
+{
+    <button type="button" class="btn btn-primary" @onclick="@(()=>ChangeMode(null))">Сотрудники</button>
+    <button type="button" class="btn btn-primary" @onclick="@(()=>ChangeMode(true))">Отделы</button>
+    <ElinCoureseProjectClient.Pages.Markup.Positions />
+}
+@if (_isMode == true)
+{
+    <button type="button" class="btn btn-primary" @onclick="@(()=>ChangeMode(null))">Сотрудники</button>
+    <button type="button" class="btn btn-primary" @onclick="@(()=>ChangeMode(false))">Должности</button>
+    <ElinCoureseProjectClient.Pages.Markup.Depatments />
+}
+
+@code {
+  private bool? _isMode = null;
+
+  private void ChangeMode(bool? mode)
+  {
+        @if (mode == null)
+        {
+            _isMode = mode;
+            StateHasChanged();
+        }
+        @if (mode == false)
+        {
+            _isMode = mode;
+            StateHasChanged();
+        }
+        @if (mode == true)
+        {
+            _isMode = mode;
+            StateHasChanged();
+        }
+      }
+  }
